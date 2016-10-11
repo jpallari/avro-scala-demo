@@ -1,0 +1,15 @@
+{
+  "namespace": "avroscalademo.v1",
+  "type": "record",
+  "name": "Person",
+  "fields": [{
+    "name": "name",
+    "type": "string"
+  }, {
+    "name": "email",
+    "type": {
+      "type": "array",
+      "items": "string"
+    }
+  }]
+}
