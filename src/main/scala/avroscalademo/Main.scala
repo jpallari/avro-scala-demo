@@ -2,7 +2,7 @@ package avroscalademo
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 import org.apache.avro.Schema
-import com.sksamuel.avro4s.{SchemaFor, ToRecord, AvroOutputStream, AvroInputStream}
+import com.sksamuel.avro4s.{SchemaFor, AvroOutputStream, AvroInputStream}
 
 import avroscalademo.v1.Person
 
@@ -16,14 +16,11 @@ object PersonSchema {
     schemaParser.parse(schemaFile)
   }
 
-  // Schema provided implicitly
+  // Schema provided implicitly for avro4s code
   implicit val personSchemaImplicit: SchemaFor[Person] =
     new SchemaFor[Person] {
       override def apply(): Schema = personSchema
     }
-
-  // Person to generic record converter
-  implicit val personToRecord: ToRecord[Person] = ToRecord[Person]
 }
 
 object Main extends App {
