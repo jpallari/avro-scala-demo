@@ -22,6 +22,13 @@ code in combination with the previously read schema to read and write binary
 data to the generated classes. This way the mapping code is transparent to the
 user.
 
+## Running the demo
+
+You have to have [sbt][] installed. After you've installed `sbt`, run command:
+
+    sbt run
+
 [avro]: http://avro.apache.org/
 [avro4s]: https://github.com/sksamuel/avro4s
 [sbtavro4s]: https://github.com/sksamuel/sbt-avro4s
+[sbt]: http://www.scala-sbt.org/
