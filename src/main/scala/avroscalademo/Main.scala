@@ -25,11 +25,21 @@ object PersonSchema {
     }
 }
 
+case class Company(persons: Seq[Person])
+
+object Company {
+  // Generate a schema based on an existing class using avro4s at compile time.
+  val companySchema = AvroSchema[Company]
+}
+
 object Main extends App {
   import PersonSchema._
+  import Company._
 
+  // Example person object
   val person = Person(name = "Harry", email = Seq("harryh@company.com", "h4rr1@hacker.xyz"))
 
+  // Object converted to bytes
   val personAsBytes: Array[Byte] = {
     val baos = new ByteArrayOutputStream
     val output = AvroOutputStream.binary[Person](baos)
@@ -38,12 +48,14 @@ object Main extends App {
     baos.toByteArray
   }
 
+  // Bytes converted back to an object
   val personFromBytes: Person = {
     val in = new ByteArrayInputStream(personAsBytes)
     val input = AvroInputStream.binary[Person](in)
     input.iterator.toSeq.head
   }
 
+  // Object converted to JSON string
   val personAsJson: String = {
     val baos = new ByteArrayOutputStream()
     val output = AvroOutputStream.json[Person](baos)
@@ -52,30 +64,27 @@ object Main extends App {
     baos.toString("UTF-8")
   }
 
+  // JSON string converted back to an object
   val personFromJson: Person = {
     val in = new ByteArrayInputStream(personAsJson.getBytes("UTF-8"))
     val input = AvroInputStream.json[Person](in)
     input.singleEntity match {
       case Success(p) => p
-      case Failure(e) => throw JsonParseException("could not convert from json")
+      case Failure(e) => sys.error("could not convert from json")
     }
   }
 
+  // Conversion from an object to a generic Avro record back to an object
   val format = RecordFormat[Person]
   val personRecord = format.to(person)
   val personFromRecord = format.from(personRecord)
 
-  case class JsonParseException(msg: String) extends Exception(msg)
-
-  case class Company(persons: Seq[Person])
-  val companySchema = AvroSchema[Company]
-
-  println("Schema: " + personSchema)
+  println("Company schema             : " + companySchema)
+  println("Person schema              : " + personSchema)
   println("Person before serializing  : " + person)
   println("Person after deserializing : " + personFromBytes)
-  println("Person as Json : "  + personAsJson)
-  println("Person from Json : " + personFromJson)
-  println("Person as Record : "  + personRecord)
-  println("Person from Record : " + personFromRecord)
-  println("Company schema: " + companySchema)
+  println("Person as Json             : " + personAsJson)
+  println("Person from Json           : " + personFromJson)
+  println("Person as Record           : " + personRecord)
+  println("Person from Record         : " + personFromRecord)
 }
